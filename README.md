@@ -1,6 +1,6 @@
 # App
 
-GymPass style app.
+Aplicativo para adoção de pets.
 
 ## RFs (Requisitos funcionais)
 
