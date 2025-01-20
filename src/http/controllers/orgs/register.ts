@@ -1,6 +1,9 @@
+import { PrismaOrgsRepository } from '@/repositories/prisma/prisma-orgs.repository'
+import { OrgAlreadyExistsError } from '@/use-cases/errors/org-already-exists-error'
+import { RegisterUseCase } from '@/use-cases/register'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   const registerBodySchema = z.object({
     name: z.string(),
@@ -17,7 +20,6 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     neighborhood: z.string(),
     number: z.number(),
     owner_name: z.string(),
-    password_hash: z.string(),
     phone: z.string().regex(/^\d{10,11}$/, { message: 'Telefone inválido' }),
     state: z.string().length(2),
     street: z.string(),
@@ -33,14 +35,18 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     neighborhood,
     number,
     owner_name,
-    password_hash,
+    password,
     phone,
     state,
     street,
   } = registerBodySchema.parse(request.body)
 
-  await prisma.org.create({
-    data: {
+  try {
+    const orgsRepository = new PrismaOrgsRepository()
+
+    const registerUseCase = new RegisterUseCase(orgsRepository)
+
+    await registerUseCase.execute({
       cep,
       city,
       email,
@@ -48,13 +54,21 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
       longitude,
       name,
       neighborhood,
-      number: number.toString(),
+      number,
       owner_name,
-      password_hash,
+      password,
       phone,
       state,
       street,
-    },
-  })
+    })
+  } catch (error) {
+    if (error instanceof OrgAlreadyExistsError) {
+      return reply.status(409).send({
+        message: error.message,
+      })
+    }
+
+    throw error
+  }
   return reply.status(201).send()
 }
