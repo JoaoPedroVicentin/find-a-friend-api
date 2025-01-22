@@ -30,7 +30,7 @@ model Org {
   owner_name    String
   email         String  @unique
   password_hash String
-  phone         String
+  phone         String  @unique
   cep           String
   state         String
   city          String

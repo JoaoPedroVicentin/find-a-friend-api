@@ -13,6 +13,16 @@ export class PrismaOrgsRepository implements IOrgsRepository {
     return org
   }
 
+  async findByPhone(phone: string) {
+    const org = await prisma.org.findUnique({
+      where: {
+        phone,
+      },
+    })
+
+    return org
+  }
+
   async create(data: Prisma.OrgCreateInput) {
     const org = await prisma.org.create({
       data,
