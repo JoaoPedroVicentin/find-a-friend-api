@@ -1,6 +1,5 @@
-import { PrismaOrgsRepository } from '@/repositories/prisma/prisma-orgs.repository'
 import { OrgEmailAlreadyExistsError } from '@/use-cases/errors/org-email-already-exists-error'
-import { RegisterUseCase } from '@/use-cases/register'
+import { makeRegisterUseCase } from '@/use-cases/factories/make-register-use-case'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
@@ -18,7 +17,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
       return Math.abs(value) <= 180
     }),
     neighborhood: z.string(),
-    number: z.number(),
+    number: z.string(),
     owner_name: z.string(),
     phone: z.string().regex(/^\d{10,11}$/, { message: 'Telefone inválido' }),
     state: z.string().length(2),
@@ -42,9 +41,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
   } = registerBodySchema.parse(request.body)
 
   try {
-    const orgsRepository = new PrismaOrgsRepository()
-
-    const registerUseCase = new RegisterUseCase(orgsRepository)
+    const registerUseCase = makeRegisterUseCase()
 
     await registerUseCase.execute({
       cep,

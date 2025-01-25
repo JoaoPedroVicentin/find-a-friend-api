@@ -13,7 +13,7 @@ interface IOrgUseCaseRequest {
   latitude: number
   longitude: number
   neighborhood: string
-  number: number
+  number: string
   owner_name: string
   phone: string
   state: string

@@ -1,15 +1,20 @@
 import { compare } from 'bcryptjs'
-import { expect, describe, it } from 'vitest'
-import { RegisterUseCase } from './register'
+import { expect, describe, it, beforeEach } from 'vitest'
 import { InMemoryOrgsRepository } from '@/repositories/in-memory/in-memory-orgs-repository'
 import { OrgEmailAlreadyExistsError } from './errors/org-email-already-exists-error'
+import { RegisterUseCase } from './register'
+
+let orgsRepository: InMemoryOrgsRepository
+let sut: RegisterUseCase
 
 describe('Register Use Case', () => {
-  it('should be able to register', async () => {
-    const orgsRepository = new InMemoryOrgsRepository()
-    const registerUseCase = new RegisterUseCase(orgsRepository)
+  beforeEach(() => {
+    orgsRepository = new InMemoryOrgsRepository()
+    sut = new RegisterUseCase(orgsRepository)
+  })
 
-    const { org } = await registerUseCase.execute({
+  it('should be able to register', async () => {
+    const { org } = await sut.execute({
       name: 'JohnDoe Org',
       email: 'johndoe@example.com',
       password: 'senha123456',
@@ -18,21 +23,18 @@ describe('Register Use Case', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       neighborhood: 'Centro',
-      number: 123,
+      number: '123',
       owner_name: 'John Doe',
       phone: '99999999999',
       state: 'SP',
       street: 'Avenida Paulista',
     })
 
-    await expect(org.id).toEqual(expect.any(String))
+    expect(org.id).toEqual(expect.any(String))
   })
 
   it('should hash org password upon registration', async () => {
-    const orgsRepository = new InMemoryOrgsRepository()
-    const registerUseCase = new RegisterUseCase(orgsRepository)
-
-    const { org } = await registerUseCase.execute({
+    const { org } = await sut.execute({
       name: 'JohnDoe Org',
       email: 'johndoe@example.com',
       password: 'senha123456',
@@ -41,7 +43,7 @@ describe('Register Use Case', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       neighborhood: 'Centro',
-      number: 123,
+      number: '123',
       owner_name: 'John Doe',
       phone: '99999999999',
       state: 'SP',
@@ -57,12 +59,9 @@ describe('Register Use Case', () => {
   })
 
   it('should not be able to register with same email twice', async () => {
-    const orgsRepository = new InMemoryOrgsRepository()
-    const registerUseCase = new RegisterUseCase(orgsRepository)
-
     const email = 'johndoe@example.com'
 
-    await registerUseCase.execute({
+    await sut.execute({
       name: 'JohnDoe Org',
       email,
       password: 'senha123456',
@@ -71,15 +70,15 @@ describe('Register Use Case', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       neighborhood: 'Centro',
-      number: 123,
-      owner_name: 'João Pedro Vicentin',
+      number: '123',
+      owner_name: 'John Doe',
       phone: '99999999999',
       state: 'SP',
       street: 'Avenida Paulista',
     })
 
     await expect(() =>
-      registerUseCase.execute({
+      sut.execute({
         name: 'JohnDoe Org',
         email,
         password: 'senha123456',
@@ -88,8 +87,8 @@ describe('Register Use Case', () => {
         latitude: -23.55052,
         longitude: -46.633308,
         neighborhood: 'Centro',
-        number: 123,
-        owner_name: 'João Pedro Vicentin',
+        number: '123',
+        owner_name: 'John Doe',
         phone: '99999999999',
         state: 'SP',
         street: 'Avenida Paulista',
@@ -98,12 +97,9 @@ describe('Register Use Case', () => {
   })
 
   it('should not be able to register with same phone twice', async () => {
-    const orgsRepository = new InMemoryOrgsRepository()
-    const registerUseCase = new RegisterUseCase(orgsRepository)
-
     const phone = '99999999999'
 
-    await registerUseCase.execute({
+    await sut.execute({
       name: 'JohnDoe Org',
       email: 'johndoe@example.com',
       password: 'senha123456',
@@ -112,15 +108,15 @@ describe('Register Use Case', () => {
       latitude: -23.55052,
       longitude: -46.633308,
       neighborhood: 'Centro',
-      number: 123,
-      owner_name: 'João Pedro Vicentin',
+      number: '123',
+      owner_name: 'John Doe',
       phone,
       state: 'SP',
       street: 'Avenida Paulista',
     })
 
     await expect(() =>
-      registerUseCase.execute({
+      sut.execute({
         name: 'JohnDoe Org',
         email: 'johndoe@example.com',
         password: 'senha123456',
@@ -129,8 +125,8 @@ describe('Register Use Case', () => {
         latitude: -23.55052,
         longitude: -46.633308,
         neighborhood: 'Centro',
-        number: 123,
-        owner_name: 'João Pedro Vicentin',
+        number: '123',
+        owner_name: 'John Doe',
         phone,
         state: 'SP',
         street: 'Avenida Paulista',

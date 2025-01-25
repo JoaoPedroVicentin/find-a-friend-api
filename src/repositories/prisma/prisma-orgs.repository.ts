@@ -3,6 +3,16 @@ import { Prisma } from '@prisma/client'
 import { IOrgsRepository } from '../orgs-repository'
 
 export class PrismaOrgsRepository implements IOrgsRepository {
+  async findById(id: string) {
+    const org = await prisma.org.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    return org
+  }
+
   async findByEmail(email: string) {
     const org = await prisma.org.findUnique({
       where: {

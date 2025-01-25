@@ -1,9 +1,19 @@
 import { Org, Prisma } from '@prisma/client'
 import { IOrgsRepository } from '../orgs-repository'
 import { Decimal } from '@prisma/client/runtime/library'
+import { randomUUID } from 'node:crypto'
 
 export class InMemoryOrgsRepository implements IOrgsRepository {
   public items: Org[] = []
+  async findById(id: string) {
+    const org = this.items.find((org) => org.id === id)
+
+    if (!org) {
+      return null
+    }
+
+    return org
+  }
 
   async findByEmail(email: string) {
     const org = this.items.find((org) => org.email === email)
@@ -26,8 +36,8 @@ export class InMemoryOrgsRepository implements IOrgsRepository {
   }
 
   async create(data: Prisma.OrgCreateInput) {
-    const org = {
-      id: 'org-001',
+    const org: Org = {
+      id: randomUUID(),
       name: data.name,
       owner_name: data.owner_name,
       email: data.email,
