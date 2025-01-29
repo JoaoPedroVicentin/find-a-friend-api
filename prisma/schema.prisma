@@ -31,7 +31,7 @@ model Org {
   email         String  @unique
   password_hash String
   phone         String  @unique
-  cep           String
+  cep           String  @unique
   state         String
   city          String
   neighborhood  String

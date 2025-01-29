@@ -1,10 +1,12 @@
-import { PetsRepository } from '@/repositories/pets-repository'
+import { IOrgsRepository } from '@/repositories/orgs-repository'
+import { IPetsRepository } from '@/repositories/pets-repository'
 import { Age, Environment, Level, Pet, Size } from '@prisma/client'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
 
 interface ICreatePetUseCaseRequest {
   org_id: string
   name: string
-  description: string
+  description?: string | null
   age: Age
   size: Size
   energy_level: Level
@@ -18,11 +20,23 @@ interface ICreatePetUseCaseResponse {
 }
 
 export class CreatePetUseCase {
-  constructor(private checkInsRepository: PetsRepository) {}
+  constructor(
+    private petsRepository: IPetsRepository,
+    private orgsRepository: IOrgsRepository,
+  ) {}
+
   async execute(
     data: ICreatePetUseCaseRequest,
   ): Promise<ICreatePetUseCaseResponse> {
-    const pet = await this.checkInsRepository.create(data)
+    const { org_id } = data
+
+    const org = await this.orgsRepository.findById(org_id)
+
+    if (!org) {
+      throw new ResourceNotFoundError()
+    }
+
+    const pet = await this.petsRepository.create(data)
 
     return {
       pet,
