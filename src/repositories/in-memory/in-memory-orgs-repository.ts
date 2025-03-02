@@ -35,6 +35,16 @@ export class InMemoryOrgsRepository implements IOrgsRepository {
     return org
   }
 
+  async findByCep(cep: string) {
+    const org = this.items.find((org) => org.cep === cep)
+
+    if (!org) {
+      return null
+    }
+
+    return org
+  }
+
   async create(data: Prisma.OrgCreateInput) {
     const org: Org = {
       id: randomUUID(),

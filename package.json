@@ -1,7 +1,7 @@
 {
   "name": "03-desafio-find-a-friend-api",
   "version": "1.0.0",
-  "description": "Org Pet style app.",
+  "description": "API for animal adoption.",
   "main": "index.js",
   "scripts": {
     "start:dev": "tsx watch src/server.ts",
@@ -46,6 +46,7 @@
     "vitest": "3.0.7"
   },
   "dependencies": {
+    "@fastify/cookie": "11.0.2",
     "@fastify/jwt": "9.0.3",
     "@prisma/client": "6.2.1",
     "bcryptjs": "2.4.3",

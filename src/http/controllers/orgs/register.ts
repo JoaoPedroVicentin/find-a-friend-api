@@ -1,4 +1,6 @@
+import { OrgCepAlreadyExistsError } from '@/use-cases/errors/org-cep-already-exists-error'
 import { OrgEmailAlreadyExistsError } from '@/use-cases/errors/org-email-already-exists-error'
+import { OrgPhoneAlreadyExistsError } from '@/use-cases/errors/org-phone-already-exists.error'
 import { makeRegisterUseCase } from '@/use-cases/factories/make-register-use-case'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
@@ -59,7 +61,11 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
       street,
     })
   } catch (error) {
-    if (error instanceof OrgEmailAlreadyExistsError) {
+    if (
+      error instanceof OrgEmailAlreadyExistsError ||
+      error instanceof OrgPhoneAlreadyExistsError ||
+      error instanceof OrgCepAlreadyExistsError
+    ) {
       return reply.status(409).send({
         message: error.message,
       })

@@ -33,6 +33,16 @@ export class PrismaOrgsRepository implements IOrgsRepository {
     return org
   }
 
+  async findByCep(cep: string) {
+    const org = await prisma.org.findUnique({
+      where: {
+        cep,
+      },
+    })
+
+    return org
+  }
+
   async create(data: Prisma.OrgCreateInput) {
     const org = await prisma.org.create({
       data,

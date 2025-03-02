@@ -33,8 +33,6 @@ describe('Authenticate (e2e)', () => {
       password: 'senha123',
     })
 
-    console.log(response.body)
-
     expect(response.status).toEqual(200)
     expect(response.body).toEqual({
       token: expect.any(String),

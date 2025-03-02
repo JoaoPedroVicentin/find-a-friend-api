@@ -3,6 +3,7 @@ import bcryptjs from 'bcryptjs'
 import { OrgEmailAlreadyExistsError } from './errors/org-email-already-exists-error'
 import { Org } from '@prisma/client'
 import { OrgPhoneAlreadyExistsError } from './errors/org-phone-already-exists.error'
+import { OrgCepAlreadyExistsError } from './errors/org-cep-already-exists-error'
 
 interface IOrgUseCaseRequest {
   name: string
@@ -54,6 +55,12 @@ export class RegisterUseCase {
 
     if (orgWithPhone) {
       throw new OrgPhoneAlreadyExistsError()
+    }
+
+    const orgWithCep = await this.orgsRepository.findByCep(cep)
+
+    if (orgWithCep) {
+      throw new OrgCepAlreadyExistsError()
     }
 
     const org = await this.orgsRepository.create({

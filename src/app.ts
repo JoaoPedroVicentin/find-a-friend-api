@@ -1,4 +1,5 @@
 import fastify from 'fastify'
+import fastifyCookie from '@fastify/cookie'
 import { orgsRoutes } from './http/controllers/orgs/routes'
 import { ZodError } from 'zod'
 import { env } from './env'
@@ -9,10 +10,14 @@ export const app = fastify()
 
 app.register(fastifyJwt, {
   secret: env.JWT_SECRET,
+  sign: {
+    expiresIn: '10m',
+  },
 })
 
-app.register(orgsRoutes)
+app.register(fastifyCookie)
 
+app.register(orgsRoutes)
 app.register(petsRoutes)
 
 app.setErrorHandler((error, _, reply) => {
